@@ -1,8 +1,4 @@
-import {
-  faGrinHearts,
-  faHeart,
-  faHeartbeat,
-} from "@fortawesome/free-solid-svg-icons";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -28,7 +24,6 @@ function ListOffers() {
   useEffect(() => {
     axios.get("http://localhost:5000/offers").then((res) => {
       setOffers(res.data);
-      console.log(offers);
     });
     return () => {};
   }, []);

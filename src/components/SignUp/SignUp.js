@@ -1,19 +1,12 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faApple,
-  faFacebookF,
-  faGoogle,
-  faInstagram,
-  faKeybase,
-  faTheRedYeti,
-} from "@fortawesome/free-brands-svg-icons";
+
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import User from "../../models/User";
-import { useSelector } from "react-redux";
-import env from "react-dotenv";
+import { useDispatch } from "react-redux";
+
 import Footer from "../Footer/Footer";
 function SignUp() {
   const [firstName, setFirstName] = useState("");
@@ -21,6 +14,7 @@ function SignUp() {
   const [login, setlogin] = useState("");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
+  const dispatch = useDispatch();
   const showPassword = () => {
     var x = document.getElementById("login-form-password");
     if (x.type === "password") {
@@ -37,17 +31,17 @@ function SignUp() {
   };
 
   const RegisterAction = () => {
-    var user = new User(login, firstName, lastName, password, email, "USER");
-    // axios
-    //   .post("http://localhost:5000/register", { user })
-    //   .then((res) => {
-    //     console.log(res);
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
-    localStorage.setItem("user", JSON.stringify(user));
-    window.location.assign("/");
+    var user = new User(login, firstName, lastName, password, email, "ADMIN");
+    axios
+      .post("http://localhost:5000/register", { user })
+      .then((res) => {
+        console.log(res);
+        dispatch({ type: "auth", user: res.data });
+        window.location.assign("/");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
   return (
     <section id="content">

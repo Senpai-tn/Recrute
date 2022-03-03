@@ -1,12 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ListOffers from "../Offers/ListOffers";
-import Footer from "../Footer/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLongArrowAltRight,
-  faLongArrowAltUp,
-} from "@fortawesome/free-solid-svg-icons";
+import { faLongArrowAltRight } from "@fortawesome/free-solid-svg-icons";
 function Home() {
   const dispatch = useDispatch();
   var user = useSelector((state) => state.user);
