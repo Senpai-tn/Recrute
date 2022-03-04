@@ -1,7 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-
+import Modal from "react-modal";
+import "./Quiz.css";
+Modal.setAppElement("#root");
 function Quiz() {
   var location = useLocation();
   var { type } = location.state || "";
@@ -9,8 +11,36 @@ function Quiz() {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(30);
   const [submited, setSubmited] = useState(false);
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [formData, setFormData] = useState({});
+  const [answers, setAnswers] = useState([]);
 
-  var answers = [];
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value.trim(),
+    });
+  };
+
+  const Validate = () => {
+    var result = [];
+    questions.map((question, index) => {
+      if (question.correctAnswer == formData[question.question]) {
+        result[index] = true;
+      } else {
+        result[index] = false;
+      }
+    });
+    setAnswers(result);
+  };
+  function afterOpenModal() {
+    // references are now sync'd and can be accessed.
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
 
   useEffect(() => {
     let myInterval = setInterval(() => {
@@ -19,6 +49,7 @@ function Quiz() {
       }
       if (seconds === 0) {
         if (minutes === 0) {
+          setMessage("Time out");
           clearInterval(myInterval);
         } else {
           setMinutes(minutes - 1);
@@ -31,11 +62,6 @@ function Quiz() {
     };
   });
 
-  const validate = (event) => {
-    event.preventDefault();
-    console.log(event.target[0].value);
-    return false;
-  };
   useEffect(() => {
     axios.get("http://localhost:5000/questions/" + type).then((res) => {
       setQuestion(res.data.questions);
@@ -58,17 +84,45 @@ function Quiz() {
         >
           {minutes}:{seconds}
         </div>
-        <form
-          id="Quiz"
-          onSubmit={() => {
-            validate();
-          }}
-        >
+        <div>
+          <Modal
+            // isOpen={modalIsOpen || minutes + seconds == 0}
+            isOpen={modalIsOpen}
+            onAfterOpen={afterOpenModal}
+            onRequestClose={closeModal}
+            contentLabel="Example Modal"
+            className="Modal"
+            overlayClassName="Overlay"
+          >
+            <button onClick={closeModal}>X</button>
+            <div
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
+              {message}
+            </div>
+          </Modal>
+        </div>
+        <form id="Quiz">
           {questions.map((question, index) => {
             return (
               // <> fragment
               <>
-                <h4>{question.question}</h4>
+                <h4
+                  style={{
+                    backgroundColor:
+                      answers[index] == null
+                        ? "white"
+                        : answers[index]
+                        ? "green"
+                        : "red",
+                  }}
+                >
+                  {question.question}
+                </h4>
                 <ul>
                   {question.answers.map((answer) => {
                     return (
@@ -76,30 +130,33 @@ function Quiz() {
                         <label htmlFor={answer + "" + index}>{answer}</label>
                         <input
                           onChange={(e) => {
-                            answers[index] = e.target.value;
+                            handleChange(e);
                           }}
                           id={answer + "" + index}
                           type="radio"
-                          name={index}
+                          name={question.question}
                           value={answer}
                         />
-                        <br></br>
                       </div>
                     );
                   })}
                 </ul>
+                <br></br>
               </>
             );
           })}
-          {seconds != 0 && minutes != 0 ? (
-            <input
-              type={"button"}
-              value="Submit"
-              onClick={() => {
-                console.log(answers);
-              }}
-            />
-          ) : null}
+          {/* {seconds + minutes != 0 && !submited ? ( */}
+          <input
+            type={"button"}
+            value="Submit"
+            onClick={() => {
+              Validate();
+              console.log(answers);
+              setSubmited(true);
+            }}
+          />
+
+          {/* ) : null} */}
         </form>
       </div>
     </div>
