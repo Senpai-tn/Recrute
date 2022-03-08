@@ -218,8 +218,14 @@ function SignIn() {
                 </div>
 
                 <p className="mb-0 mt-4 text-center fw-semibold">
-                  Don't have an account?
-                  <Link to={"/register"}>
+                  Don't have an account ?{"   "}
+                  <Link to={"/register"} state={{ type: "CANDIDATE" }}>
+                    <u>Sign up</u>
+                  </Link>
+                </p>
+                <p className="mb-0 mt-4 text-center fw-semibold">
+                  Sign up as HR{"   "}
+                  <Link to={"/register"} state={{ type: "HR" }}>
                     <u>Sign up</u>
                   </Link>
                 </p>

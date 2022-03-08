@@ -1,7 +1,7 @@
 window.env = {
   "ALLUSERSPROFILE": "C:\\ProgramData",
   "APPDATA": "C:\\Users\\delah\\AppData\\Roaming",
-  "CHROME_CRASHPAD_PIPE_NAME": "\\\\.\\pipe\\crashpad_4988_JYHMQNCXCJWTLOYV",
+  "CHROME_CRASHPAD_PIPE_NAME": "\\\\.\\pipe\\crashpad_34456_XJZKLROSXMEYXLZA",
   "COLORTERM": "truecolor",
   "CommonProgramFiles": "C:\\Program Files\\Common Files",
   "CommonProgramFiles(x86)": "C:\\Program Files (x86)\\Common Files",
@@ -185,7 +185,7 @@ window.env = {
   "npm_package_description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "npm_package_eslintConfig_extends_0": "react-app",
   "npm_package_eslintConfig_extends_1": "react-app/jest",
-  "npm_package_gitHead": "42558930ee390915ed7fefdc1de15f0486f1ec08",
+  "npm_package_gitHead": "43c00dccae985ccfa1a0389a1df3719f023cf2c6",
   "npm_package_name": "recrute",
   "npm_package_private": "true",
   "npm_package_readmeFilename": "README.md",

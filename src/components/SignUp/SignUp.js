@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { faEye } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import User from "../../models/User";
 import { useDispatch } from "react-redux";
@@ -15,6 +15,9 @@ function SignUp() {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { type } = location.state;
+
   const showPassword = () => {
     var x = document.getElementById("login-form-password");
     if (x.type === "password") {
@@ -31,7 +34,7 @@ function SignUp() {
   };
 
   const RegisterAction = () => {
-    var user = new User(login, firstName, lastName, password, email, "ADMIN");
+    var user = new User(login, firstName, lastName, password, email, type);
     axios
       .post("http://localhost:5000/register", { user })
       .then((res) => {
