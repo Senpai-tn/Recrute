@@ -3,11 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Footer from "../Footer/Footer";
 
 function OfferInfo() {
-  const params = useParams();
   const [offer, setOffer] = useState({});
   var user = useSelector((state) => state.user);
   var dispatch = useDispatch();
@@ -82,7 +81,7 @@ function OfferInfo() {
         </button>
       </p>
       <p>
-        <Link to={"/quiz"} state={{ type: offer.type }}>
+        <Link to={"/quiz"} state={{ offer: offer }}>
           Apply
         </Link>
       </p>
