@@ -1,0 +1,12 @@
+.message{
+    font-weight: bolder;
+    font-size: larger;
+}
+.error{
+    color: red;
+}
+
+.valid{
+    color: green;
+}
+

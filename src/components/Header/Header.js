@@ -1,7 +1,8 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
-import logo from "../../images/canvasforum.png";
+import logo from "../../images/logo_final.png";
+
 function Header() {
   const location = useLocation();
   const toggleMenu = () => {};
@@ -17,14 +18,15 @@ function Header() {
           <div className="container">
             <div className="header-row">
               <div id="logo">
-                <a href="demo-forum.html" className="standard-logo">
-                  <img src={logo} alt="Canvas Logo" />
+                <a href="/" className="standard-logo">
+                  <img
+                    style={{ backgroundColor: "transparent", border: 0 }}
+                    src={logo}
+                    alt="Canvas Logo"
+                  />
                 </a>
                 <a href="demo-forum.html" className="retina-logo">
-                  {/* <img
-                  src="demos/forum/images/canvasforum@2x.png"
-                  alt="Canvas Logo"
-                /> */}
+                  {<img src={logo} alt="Canvas Logo" />}
                 </a>
               </div>
               <div className="header-misc ms-0 ms-md-2">
@@ -43,7 +45,12 @@ function Header() {
                   Sign In
                 </a>
               </div>
-              <div id="primary-menu-trigger">
+              <div
+                id="primary-menu-trigger"
+                onClick={() => {
+                  toggleMenu();
+                }}
+              >
                 <svg className="svg-trigger" viewBox="0 0 100 100">
                   <path d="m 30,33 h 40 c 3.722839,0 7.5,3.126468 7.5,8.578427 0,5.451959 -2.727029,8.421573 -7.5,8.421573 h -20"></path>
                   <path d="m 30,50 h 40"></path>

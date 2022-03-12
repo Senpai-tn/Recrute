@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faEye, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import User from "../../models/User";
 import { useDispatch } from "react-redux";
+import "./SignUp.css";
 
 import Footer from "../Footer/Footer";
 function SignUp() {
@@ -17,6 +18,13 @@ function SignUp() {
   const dispatch = useDispatch();
   const location = useLocation();
   const { type } = location.state;
+  const [lower, setLower] = useState(false);
+  const [upper, setUpper] = useState(false);
+  const [number, setNumber] = useState(false);
+  const [checkLength, setLength] = useState(false);
+  var lowerCaseLetters = /[a-z]/g;
+  var upperCaseLetters = /[A-Z]/g;
+  var numbers = /[0-9]/g;
 
   const showPassword = () => {
     var x = document.getElementById("login-form-password");
@@ -34,6 +42,10 @@ function SignUp() {
   };
 
   const RegisterAction = () => {
+    if (!lower || !upper || !number || !checkLength) {
+      console.log("555555");
+      return;
+    }
     var user = new User(login, firstName, lastName, password, email, type);
     axios
       .post("http://localhost:5000/register", { user })
@@ -56,58 +68,7 @@ function SignUp() {
               <div className="cs-signin-form-inner">
                 <div className="text-center">
                   <h3 className="h1 fw-bolder mb-3">Sign Up</h3>
-                  {/* <p
-                    className="text-smaller text-muted mb-4"
-                    style={{ lineHeight: 1.5 }}
-                  >
-                    <p className="divider divider-center my-2">
-                      <span>With</span>
-                    </p>
-                  </p> */}
                 </div>
-                {/* <div className="d-flex justify-content-center mb-2">
-                  <a
-                    href="/"
-                    className="social-icon si-small si-colored si-facebook"
-                    title="Facebook"
-                  >
-                    <i className="icon-facebook">
-                      <FontAwesomeIcon icon={faFacebookF} />
-                    </i>
-                    <i className="icon-facebook">
-                      <FontAwesomeIcon icon={faFacebookF} />
-                    </i>
-                  </a>
-                  <a
-                    href="/"
-                    className="social-icon si-small si-colored si-google"
-                    title="google"
-                  >
-                    <i className="icon-google">
-                      <FontAwesomeIcon icon={faGoogle} />
-                    </i>
-                    <i className="icon-google">
-                      <FontAwesomeIcon icon={faGoogle} />
-                    </i>
-                  </a>
-                  <a
-                    href="/"
-                    className="social-icon si-small si-colored si-appstore"
-                    title="apple"
-                  >
-                    <i className="icon-apple">
-                      <FontAwesomeIcon icon={faApple} />
-                    </i>
-                    <i className="icon-apple">
-                      <FontAwesomeIcon icon={faApple} />
-                    </i>
-                  </a>
-                </div>
-                <div className="clear"></div>
-                <div className="divider divider-center my-2">
-                  <span>OR</span>
-                </div> */}
-
                 <div className="col-12 form-group">
                   <label
                     className="nott ls0 fw-normal mb-1"
@@ -188,7 +149,32 @@ function SignUp() {
                       placeholder="Password"
                       required=""
                       value={password}
-                      onChange={(data) => setpassword(data.target.value)}
+                      onChange={(data) => {
+                        if (data.target.value.match(lowerCaseLetters) == null) {
+                          setLower(false);
+                        } else {
+                          setLower(true);
+                        }
+
+                        if (data.target.value.match(upperCaseLetters) == null) {
+                          setUpper(false);
+                        } else {
+                          setUpper(true);
+                        }
+
+                        if (data.target.value.match(numbers) == null) {
+                          setNumber(false);
+                        } else {
+                          setNumber(true);
+                        }
+
+                        if (data.target.value.length < 8) {
+                          setLength(false);
+                        } else {
+                          setLength(true);
+                        }
+                        setpassword(data.target.value);
+                      }}
                     />
                     <button
                       onClick={() => {
@@ -201,12 +187,52 @@ function SignUp() {
                     </button>
                   </div>
                 </div>
-                {/* <div className="col-12 d-flex justify-content-between">
-                  <div className="form-check form-check-inline"></div>
-                  <a href="/" className="text-smaller fw-medium">
-                    <u>Forgot Password?</u>
-                  </a>
-                </div> */}
+                <div>
+                  <table style={{ textAlign: "left" }}>
+                    <tr>
+                      <td
+                        className={`message ${checkLength ? "valid" : "error"}`}
+                      >
+                        Length{" "}
+                        {checkLength ? (
+                          <FontAwesomeIcon icon={faCheck} />
+                        ) : (
+                          <FontAwesomeIcon icon={faTimes} />
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className={`message ${lower ? "valid" : "error"}`}>
+                        Lower{" "}
+                        {lower ? (
+                          <FontAwesomeIcon icon={faCheck} />
+                        ) : (
+                          <FontAwesomeIcon icon={faTimes} />
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className={`message ${upper ? "valid" : "error"}`}>
+                        Upper{" "}
+                        {lower ? (
+                          <FontAwesomeIcon icon={faCheck} />
+                        ) : (
+                          <FontAwesomeIcon icon={faTimes} />
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className={`message ${number ? "valid" : "error"}`}>
+                        Number{" "}
+                        {lower ? (
+                          <FontAwesomeIcon icon={faCheck} />
+                        ) : (
+                          <FontAwesomeIcon icon={faTimes} />
+                        )}
+                      </td>
+                    </tr>
+                  </table>
+                </div>
                 <div className="col-12 mt-4">
                   <button
                     className="button button-large w-100 bg-alt py-2 rounded-1 fw-medium nott ls0 m-0"
