@@ -34271,3 +34271,30 @@ border-left-color: #F9BE79;
     margin: 20px 0;
     display: inline-block;}
 	.contant_box_404{ margin-top:-50px;}
+
+
+  .Modal {
+    top: 50%;
+    left: 50%;
+    right: 50%;
+    bottom: 10%;
+    background-color: papayawhip;
+    height: 100px;
+    width: 200px;
+    transform: translate(-50%,-50%);
+    justify-content: "center";
+    align-items: center;
+    flex: 1;
+    z-index: 10000;
+    position: relative;
+  }
+
+  .Overlay {
+    z-index: 10000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+  }

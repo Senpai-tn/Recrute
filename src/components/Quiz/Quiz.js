@@ -1,13 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Modal from "react-modal";
-import "./Quiz.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import Spinner from "../../images/spinner.gif";
 Modal.setAppElement("#root");
 function Quiz() {
   var location = useLocation();
-  let navigate = useNavigate();
   var { offer } = location.state || "";
   const [questions, setQuestion] = useState([]);
   const [minutes, setMinutes] = useState(10);
@@ -20,6 +19,8 @@ function Quiz() {
   const [finalResult, setfinalResult] = useState(0);
   const [array, setArray] = useState([0]);
   var user = useSelector((state) => state.user);
+  var isLoading = useSelector((state) => state.isLoading);
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     var answer = { key: e.target.name, value: e.target.value.trim() };
@@ -27,22 +28,8 @@ function Quiz() {
   };
 
   const Validate = () => {
-    var result = [];
-    var i = 0;
-    /*questions.map(async (question, index) => {
-      if (question.correctAnswer == formData[question.question]) {
-        result[index] = true;
-        i++;
-        console.log(i);
-      } else {
-        result[index] = false;
-      }
-    });
-    setfinalResult(i * (100 / questions.length));
-    setIsOpen(true);
-    setMessage("Your result is : " + i * (100 / questions.length) + "%");
-    setAnswers(result);*/
-
+    dispatch({ type: "loading", isLoading: true });
+    console.log(isLoading);
     axios
       .post("http://localhost:5000/questions", {
         formData: formData,
@@ -53,7 +40,8 @@ function Quiz() {
       })
       .then((res) => {
         console.log(res.data);
-        navigate("/offer", { state: { id: res.data._id } });
+        dispatch({ type: "loading", isLoading: false });
+        //navigate("/offer", { state: { id: res.data._id } });
       });
   };
 
@@ -93,7 +81,7 @@ function Quiz() {
       setArray(res.data.array);
     });
     return () => {};
-  }, []);
+  }, [offer]);
 
   return (
     <div>
@@ -111,6 +99,13 @@ function Quiz() {
           {minutes}:{seconds}
         </div>
         <div>
+          <Modal
+            isOpen={isLoading}
+            className="Modal"
+            overlayClassName="Overlay"
+          >
+            <img alt="spinner" src={Spinner} />
+          </Modal>
           <Modal
             isOpen={modalIsOpen || minutes + seconds == 0}
             //isOpen={modalIsOpen}

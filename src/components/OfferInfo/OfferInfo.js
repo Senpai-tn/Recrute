@@ -1,17 +1,19 @@
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import Footer from "../Footer/Footer";
-
+import Spinner from "../../images/spinner.gif";
+import Modal from "react-modal/lib/components/Modal";
 function OfferInfo() {
   const [offer, setOffer] = useState({});
   var user = useSelector((state) => state.user);
   var dispatch = useDispatch();
   const location = useLocation();
   const { id } = location.state || "";
+  var isLoading = useSelector((state) => state.isLoading);
 
   const checkOffer = (user, offer) => {
     var result;
@@ -37,27 +39,32 @@ function OfferInfo() {
   };
 
   useEffect(() => {
-    console.log(id);
+    dispatch({ type: "loading", isLoading: true });
     axios
       .get("http://127.0.0.1:5000/offers/get/" + id)
       .then((res) => {
+        dispatch({ type: "loading", isLoading: false });
         console.log(res.data);
         setOffer(res.data);
       })
       .catch((error) => {
+        dispatch({ type: "loading", isLoading: false });
         console.log(error);
       });
 
     return () => {};
-  }, []);
+  }, [id]);
   if (id == undefined) {
     return <div></div>;
   }
   return (
     <div>
+      <Modal isOpen={isLoading} className="Modal" overlayClassName="Overlay">
+        <img alt="spinner" src={Spinner} />
+      </Modal>
       <h2>OfferInfo {offer.title}</h2>
       <img
-        src="https://www.softfluent.fr/wp-content/uploads/2019/10/css-3.png"
+        src={"../../images/" + offer.type + ".png"}
         alt={"offer " + offer.title}
         style={{ height: "30vh", width: "auto" }}
       />
@@ -68,6 +75,13 @@ function OfferInfo() {
           "/" +
           new Date(offer.createdAt).getFullYear()}
       </span>
+      <p>
+        {offer.candidates != null ? (
+          <>
+            {offer.candidates.length} <FontAwesomeIcon icon={faUsers} />
+          </>
+        ) : null}
+      </p>
       <p>
         <button
           onClick={() => {

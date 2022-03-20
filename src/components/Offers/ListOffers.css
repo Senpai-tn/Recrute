@@ -8,27 +8,34 @@
 
 
 .item{
-    display: inline-block; /* Get all images to show in a row */
-    width: 20%;            /* Show 4 logos per row */
-    text-align: center;    /* Centre align the images */
+    display: inline-block; 
+    width: 20%; 
+    height: 250px;           
+    text-align: center;    
     margin: 3%;
     position: relative;
+    
 }
 
 .img{
-    border: 1px solid black;
-    position: relative;
+    
+    position: absolute;
     top:0;
     left: 0;
-    height: 200px;
+    height: 70%;
+    left: 50%;
+    transform: translate(-50%,0);
     
 }
 
 .title{
+    position: absolute;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
+    bottom: 0;
+    left: 35%;
+    width: 30%; 
 }
 
 

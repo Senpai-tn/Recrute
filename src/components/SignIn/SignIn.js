@@ -8,17 +8,17 @@ import {
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import env from "react-dotenv";
 import { useDispatch, useSelector } from "react-redux";
 import Footer from "../Footer/Footer";
-
+import Spinner from "../../images/spinner.gif";
+import Modal from "react-modal/lib/components/Modal";
 function SignIn() {
   const dispatch = useDispatch();
   var user = useSelector((state) => state.user);
-
   const [error, setError] = useState("");
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  var isLoading = useSelector((state) => state.isLoading);
   const showPassword = () => {
     var x = document.getElementById("login-form-password");
     if (x.type === "password") {
@@ -34,7 +34,9 @@ function SignIn() {
     }
   };
 
-  const SignInAction = () => {
+  const SignInAction = (event) => {
+    event.preventDefault();
+    dispatch({ type: "loading", isLoading: true });
     axios
       .post("http://localhost:5000/login", {
         login: login,
@@ -42,12 +44,14 @@ function SignIn() {
       })
       .then((res) => {
         console.log(res.data);
+        dispatch({ type: "loading", isLoading: false });
         dispatch({ type: "auth", user: res.data });
         localStorage.setItem("user", JSON.stringify(res.data));
         setError("");
         window.location.assign("/");
       })
       .catch((error) => {
+        dispatch({ type: "loading", isLoading: false });
         if (error.message != "Network Error") {
           switch (error.request.status) {
             case 404:
@@ -70,6 +74,9 @@ function SignIn() {
   };
   return (
     <section id="content">
+      <Modal isOpen={isLoading} className="Modal" overlayClassName="Overlay">
+        <img alt="spinner" src={Spinner} />
+      </Modal>
       <div className="content-wrap py-0">
         <div className="section m-0">
           <div className="curve-bg"></div>
@@ -130,92 +137,95 @@ function SignIn() {
                 <div className="divider divider-center my-2">
                   <span>OR</span>
                 </div>
-
-                <div className="col-12 form-group">
-                  <label
-                    className="nott ls0 fw-normal mb-1"
-                    htmlFor="login-form-username"
-                  >
-                    Username:
-                  </label>
-                  <input
-                    type="text"
-                    id="login-form-username"
-                    className="form-control fw-semibold"
-                    placeholder="Username"
-                    value={login}
-                    onChange={(data) => {
-                      setLogin(data.target.value);
-                    }}
-                    style={{
-                      backgroundColor:
-                        error == "Not Found" || error == "User Deleted"
-                          ? "red"
-                          : "white",
-                    }}
-                  />
-                  <pre style={{ color: "red", fontWeight: "bolder" }}>
-                    {error == "Not Found" || error == "User Deleted"
-                      ? error
-                      : ""}
-                  </pre>
-                </div>
-                <div className="clear"></div>
-                <div className="col-12 form-group">
-                  <label
-                    className="nott ls0 fw-normal mb-1"
-                    htmlFor="login-form-password"
-                  >
-                    Password:
-                  </label>
-                  <div className="input-group">
+                <form onSubmit={SignInAction}>
+                  <div className="col-12 form-group">
+                    <label
+                      className="nott ls0 fw-normal mb-1"
+                      htmlFor="login-form-username"
+                    >
+                      Username:
+                    </label>
                     <input
-                      id="login-form-password"
-                      type="password"
-                      className="form-control fw-semibold border-end-0"
-                      placeholder="Password"
-                      required=""
+                      required
+                      type="text"
+                      id="login-form-username"
+                      className="form-control fw-semibold"
+                      placeholder="Username"
+                      value={login}
+                      onChange={(data) => {
+                        setLogin(data.target.value);
+                      }}
                       style={{
                         backgroundColor:
-                          error == "Password does not match" ? "red" : "white",
-                      }}
-                      value={password}
-                      onChange={(data) => {
-                        setPassword(data.target.value);
+                          error == "Not Found" || error == "User Deleted"
+                            ? "red"
+                            : "white",
                       }}
                     />
-
-                    <button
-                      onClick={() => {
-                        showPassword();
-                      }}
-                      className="btn border"
-                      type="button"
-                    >
-                      <FontAwesomeIcon icon={faEye} />
-                    </button>
+                    <pre style={{ color: "red", fontWeight: "bolder" }}>
+                      {error == "Not Found" || error == "User Deleted"
+                        ? error
+                        : ""}
+                    </pre>
                   </div>
-                  <pre style={{ color: "red", fontWeight: "bolder" }}>
-                    {error == "Password does not match" ? error : ""}
-                  </pre>
-                </div>
-                <div className="col-12 d-flex justify-content-between">
-                  <div className="form-check form-check-inline"></div>
-                  <a href="/" className="text-smaller fw-medium">
-                    <u>Forgot Password?</u>
-                  </a>
-                </div>
-                <div className="col-12 mt-4">
-                  <button
-                    className="button button-large w-100 bg-alt py-2 rounded-1 fw-medium nott ls0 m-0"
-                    id="login-form-submit"
-                    name="login-form-submit"
-                    value="login"
-                    onClick={() => SignInAction()}
-                  >
-                    Login
-                  </button>
-                </div>
+                  <div className="clear"></div>
+
+                  <div className="col-12 form-group">
+                    <label
+                      className="nott ls0 fw-normal mb-1"
+                      htmlFor="login-form-password"
+                    >
+                      Password:
+                    </label>
+                    <div className="input-group">
+                      <input
+                        required
+                        id="login-form-password"
+                        type="password"
+                        className="form-control fw-semibold border-end-0"
+                        placeholder="Password"
+                        style={{
+                          backgroundColor:
+                            error == "Password does not match"
+                              ? "red"
+                              : "white",
+                        }}
+                        value={password}
+                        onChange={(data) => {
+                          setPassword(data.target.value);
+                        }}
+                      />
+
+                      <button
+                        onClick={() => {
+                          showPassword();
+                        }}
+                        className="btn border"
+                        type="button"
+                      >
+                        <FontAwesomeIcon icon={faEye} />
+                      </button>
+                    </div>
+                    <pre style={{ color: "red", fontWeight: "bolder" }}>
+                      {error == "Password does not match" ? error : ""}
+                    </pre>
+                  </div>
+                  <div className="col-12 d-flex justify-content-between">
+                    <div className="form-check form-check-inline"></div>
+                    <a href="/" className="text-smaller fw-medium">
+                      <u>Forgot Password?</u>
+                    </a>
+                  </div>
+                  <div className="col-12 mt-4">
+                    <input
+                      type={"submit"}
+                      className="button button-large w-100 bg-alt py-2 rounded-1 fw-medium nott ls0 m-0"
+                      id="login-form-submit"
+                      name="login-form-submit"
+                      value="login"
+                    />
+                  </div>
+                </form>
 
                 <p className="mb-0 mt-4 text-center fw-semibold">
                   Don't have an account ?{"   "}

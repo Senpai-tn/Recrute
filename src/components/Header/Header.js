@@ -25,7 +25,7 @@ function Header() {
                     alt="Canvas Logo"
                   />
                 </a>
-                <a href="demo-forum.html" className="retina-logo">
+                <a href="/" className="retina-logo">
                   {<img src={logo} alt="Canvas Logo" />}
                 </a>
               </div>
@@ -62,7 +62,7 @@ function Header() {
                 <ul className="menu-container pe-0 pe-md-3">
                   <li
                     className={
-                      location.pathname == "/"
+                      location.pathname === "/"
                         ? "menu-item current"
                         : "menu-item"
                     }
@@ -73,7 +73,7 @@ function Header() {
                   </li>
                   <li
                     className={
-                      location.pathname == "/users"
+                      location.pathname === "/users"
                         ? "menu-item current"
                         : "menu-item"
                     }
@@ -84,7 +84,7 @@ function Header() {
                   </li>
                   <li
                     className={
-                      location.pathname == "/offers"
+                      location.pathname === "/offers"
                         ? "menu-item current"
                         : "menu-item"
                     }
@@ -95,7 +95,7 @@ function Header() {
                   </li>
                   <li
                     className={
-                      location.pathname == "/exams"
+                      location.pathname === "/exams"
                         ? "menu-item current"
                         : "menu-item"
                     }
@@ -109,7 +109,7 @@ function Header() {
                   </li>
                   <li
                     className={
-                      location.pathname == "/types"
+                      location.pathname === "/types"
                         ? "menu-item current"
                         : "menu-item"
                     }

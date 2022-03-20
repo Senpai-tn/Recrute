@@ -36,9 +36,18 @@ function ListOffers() {
             <div className="item">
               <img
                 className="img"
-                src="https://www.softfluent.fr/wp-content/uploads/2019/10/css-3.png"
+                src={"../../images/" + item.type + ".png"}
+                alt={item.title}
               />
-              <span style={{ fontSize: 28, color: "red" }}>
+              <span
+                style={{
+                  fontSize: 28,
+                  color: "red",
+                  position: "absolute",
+                  bottom: 8,
+                  left: "25%",
+                }}
+              >
                 <FontAwesomeIcon
                   className="icon"
                   icon={faHeart}
