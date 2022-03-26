@@ -14,7 +14,6 @@ import Spinner from "../../images/spinner.gif";
 import Modal from "react-modal/lib/components/Modal";
 function SignIn() {
   const dispatch = useDispatch();
-  var user = useSelector((state) => state.user);
   const [error, setError] = useState("");
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -52,7 +51,7 @@ function SignIn() {
       })
       .catch((error) => {
         dispatch({ type: "loading", isLoading: false });
-        if (error.message != "Network Error") {
+        if (error.message !== "Network Error") {
           switch (error.request.status) {
             case 404:
               setError("Not Found");
@@ -157,13 +156,13 @@ function SignIn() {
                       }}
                       style={{
                         backgroundColor:
-                          error == "Not Found" || error == "User Deleted"
+                          error === "Not Found" || error === "User Deleted"
                             ? "red"
                             : "white",
                       }}
                     />
                     <pre style={{ color: "red", fontWeight: "bolder" }}>
-                      {error == "Not Found" || error == "User Deleted"
+                      {error === "Not Found" || error === "User Deleted"
                         ? error
                         : ""}
                     </pre>
@@ -186,7 +185,7 @@ function SignIn() {
                         placeholder="Password"
                         style={{
                           backgroundColor:
-                            error == "Password does not match"
+                            error === "Password does not match"
                               ? "red"
                               : "white",
                         }}
@@ -207,7 +206,7 @@ function SignIn() {
                       </button>
                     </div>
                     <pre style={{ color: "red", fontWeight: "bolder" }}>
-                      {error == "Password does not match" ? error : ""}
+                      {error === "Password does not match" ? error : ""}
                     </pre>
                   </div>
                   <div className="col-12 d-flex justify-content-between">

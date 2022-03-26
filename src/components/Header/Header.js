@@ -1,11 +1,21 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 
 import logo from "../../images/logo_final.png";
 
 function Header() {
+  const user = useSelector((state) => state.user) || {};
+
   const location = useLocation();
+  const dispatch = useDispatch();
   const toggleMenu = () => {};
+  console.log(" user");
+  console.log(user);
+
+  if (location.pathname === "/ADMIN") {
+    return <></>;
+  }
   return (
     <div className="stretched search-overlay has-plugin-bootstrap has-plugin-easing device-md">
       <div id="wrapper" className="clearfix"></div>
@@ -30,21 +40,49 @@ function Header() {
                 </a>
               </div>
               <div className="header-misc ms-0 ms-md-2">
-                <div id="top-search" className="header-misc-icon">
+                {/* <div id="top-search" className="header-misc-icon">
                   <a href="google.com" id="top-search-trigger">
                     <i className="icon-line-search"></i>
                     <i className="icon-line-cross"></i>
                   </a>
+                </div> */}
+              </div>
+
+              {Object.keys(user).length === 0 || user == undefined ? (
+                <div className="header-misc">
+                  <button
+                    onClick={() => window.location.assign("/")}
+                    className="button button-border border-default px-4 rounded-1 fw-medium nott ls0 m-0 px-3 h-op-09"
+                  >
+                    Sign in
+                  </button>
                 </div>
-              </div>
-              <div className="header-misc">
-                <a
-                  href="demo-forum.html"
-                  className="button button-border border-default px-4 rounded-1 fw-medium nott ls0 m-0 px-3 h-op-09"
-                >
-                  Sign In
-                </a>
-              </div>
+              ) : (
+                <div className="header-misc">
+                  <button
+                    style={{ color: "black" }}
+                    onClick={() => {
+                      window.location.assign("/" + user.role);
+                    }}
+                    className="button button-border border-default px-4 rounded-1 fw-medium nott ls0 m-0 px-3 h-op-09"
+                  >
+                    {user.role}
+                  </button>
+                  <button
+                    style={{ color: "red" }}
+                    onClick={() => {
+                      dispatch({
+                        type: "auth",
+                        user: {},
+                      });
+                      window.location.assign("/");
+                    }}
+                    className="button button-border border-default px-4 rounded-1 fw-medium nott ls0 m-0 px-3 h-op-09"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
               <div
                 id="primary-menu-trigger"
                 onClick={() => {
@@ -106,21 +144,6 @@ function Header() {
                     >
                       <div>Search Page</div>
                     </a>
-                  </li>
-                  <li
-                    className={
-                      location.pathname === "/types"
-                        ? "menu-item current"
-                        : "menu-item"
-                    }
-                  >
-                    <Link
-                      to={"/login"}
-                      className="menu-link"
-                      href="demo-forum-signin.html"
-                    >
-                      <div>Sign In Page</div>
-                    </Link>
                   </li>
                 </ul>
               </nav>

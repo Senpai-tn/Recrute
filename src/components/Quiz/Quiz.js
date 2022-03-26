@@ -9,7 +9,7 @@ function Quiz() {
   var location = useLocation();
   var { offer } = location.state || "";
   const [questions, setQuestion] = useState([]);
-  const [minutes, setMinutes] = useState(10);
+  const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(30);
   const [submited, setSubmited] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);

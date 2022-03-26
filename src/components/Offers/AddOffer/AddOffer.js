@@ -1,6 +1,6 @@
 import axios from "axios";
 import React from "react";
-import env from "react-dotenv";
+
 import { useDispatch, useSelector } from "react-redux";
 
 function AddOffer() {

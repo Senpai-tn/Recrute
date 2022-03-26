@@ -1,4 +1,4 @@
-import { faHeart, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faL, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import Spinner from "../../images/spinner.gif";
 import Modal from "react-modal/lib/components/Modal";
 function OfferInfo() {
   const [offer, setOffer] = useState({});
+  const [test, setTest] = useState(false);
   var user = useSelector((state) => state.user);
   var dispatch = useDispatch();
   const location = useLocation();
@@ -38,25 +39,40 @@ function OfferInfo() {
     window.location.reload();
   };
 
-  useEffect(() => {
+  const check = (offer) => {
+    offer.candidates.map((c) => {
+      if (c.user._id == user._id) {
+        setTest(true);
+      }
+    });
+  };
+
+  const getOffer = (check) => {
     dispatch({ type: "loading", isLoading: true });
     axios
       .get("http://127.0.0.1:5000/offers/get/" + id)
       .then((res) => {
         dispatch({ type: "loading", isLoading: false });
-        console.log(res.data);
         setOffer(res.data);
+        check(res.data);
       })
+      .finally(() => {})
       .catch((error) => {
         dispatch({ type: "loading", isLoading: false });
         console.log(error);
       });
+  };
+
+  useEffect(() => {
+    getOffer(check);
 
     return () => {};
-  }, [id]);
+  }, []);
+
   if (id == undefined) {
     return <div></div>;
   }
+
   return (
     <div>
       <Modal isOpen={isLoading} className="Modal" overlayClassName="Overlay">
@@ -95,9 +111,11 @@ function OfferInfo() {
         </button>
       </p>
       <p>
-        <Link to={"/quiz"} state={{ offer: offer }}>
-          Apply
-        </Link>
+        {!test ? (
+          <Link to={"/quiz"} state={{ offer: offer }}>
+            Apply
+          </Link>
+        ) : null}
       </p>
       <Footer />
     </div>
