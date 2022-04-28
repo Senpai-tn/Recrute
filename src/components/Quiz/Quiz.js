@@ -29,7 +29,7 @@ function Quiz() {
 
   const Validate = () => {
     dispatch({ type: "loading", isLoading: true });
-    console.log(isLoading);
+
     axios
       .post("http://localhost:5000/questions", {
         formData: formData,
@@ -39,10 +39,11 @@ function Quiz() {
         idOffer: offer._id,
       })
       .then((res) => {
-        console.log(res.data);
         dispatch({ type: "loading", isLoading: false });
+        console.log(res.data);
         //navigate("/offer", { state: { id: res.data._id } });
-      });
+      })
+      .catch((error) => {});
   };
 
   function afterOpenModal() {

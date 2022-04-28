@@ -11,6 +11,8 @@ import { Dashboard as Admin } from "./components/ADMIN/Dashboard/Dashboard";
 
 import SignIn from "./components/SignIn/SignIn";
 import SignUp from "./components/SignUp/SignUp";
+import Footer from "./components/Footer/Footer";
+import CheckOffer from "./components/ADMIN/CheckOffer/CheckOffer";
 
 function Main() {
   var localData = JSON.parse(localStorage.getItem("user"));
@@ -26,35 +28,54 @@ function Main() {
       <div>
         <Router>
           <Header></Header>
-
-          {Object.keys(user).length === 0 || user == null ? (
-            <Routes>
-              <Route path="/" element={<SignIn />} />
-              <Route path="/register" element={<SignUp />} />
-              <Route path="*" element={<SignIn />} />
-            </Routes>
-          ) : user.role == "ADMIN" ? (
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/offer" element={<OfferInfo />} />
-              <Route path="/quiz" element={<Quiz />} />
-              <Route path="/addOffer" element={<AddOffer />} />
-              <Route path="/ADMIN" element={<Admin />} />
-              <Route path="/RH" element={<RH />} />
-
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          ) : (
-            user.role == "RH" && (
+          <div
+            style={{
+              minHeight: window.innerHeight - 250,
+            }}
+          >
+            {Object.keys(user).length === 0 || user == null ? (
+              <Routes>
+                <Route path="/" element={<SignIn />} />
+                <Route path="/register" element={<SignUp />} />
+                <Route path="*" element={<SignIn />} />
+              </Routes>
+            ) : user.role == "ADMIN" ? (
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/RH" element={<RH />} />
+                <Route path="/offer" element={<OfferInfo />} />
+                <Route path="/quiz" element={<Quiz />} />
+                <Route path="/addOffer" element={<AddOffer />} />
                 <Route path="/ADMIN" element={<Admin />} />
+                <Route path="/HR" element={<RH />} />
+                <Route path="/checkoffer/:id" element={<RH />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            )
-          )}
+            ) : user.role == "HR" ? (
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/HR" element={<RH />} />
+                <Route path="/ADMIN" element={<Admin />} />
+                <Route path="/addoffer" element={<AddOffer />} />
+                <Route path="/offer" element={<OfferInfo />} />
+                <Route path="/quiz" element={<Quiz />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            ) : (
+              <Routes>
+                <Route path="/checkoffer/:id" element={<CheckOffer />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/HR" element={<RH />} />
+                <Route path="/ADMIN" element={<Admin />} />
+                <Route path="/addoffer" element={<AddOffer />} />
+                <Route path="/offer" element={<OfferInfo />} />
+                <Route path="/quiz" element={<Quiz />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            )}
+          </div>
         </Router>
+
+        <Footer />
       </div>
     </div>
   );

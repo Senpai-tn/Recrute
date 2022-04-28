@@ -42,7 +42,6 @@ function SignIn() {
         password: password,
       })
       .then((res) => {
-        console.log(res.data);
         dispatch({ type: "loading", isLoading: false });
         dispatch({ type: "auth", user: res.data });
         localStorage.setItem("user", JSON.stringify(res.data));

@@ -10,14 +10,15 @@ function Header() {
   const location = useLocation();
   const dispatch = useDispatch();
   const toggleMenu = () => {};
-  console.log(" user");
-  console.log(user);
 
-  if (location.pathname === "/ADMIN") {
+  if (location.pathname.toUpperCase() === "/ADMIN") {
     return <></>;
   }
   return (
-    <div className="stretched search-overlay has-plugin-bootstrap has-plugin-easing device-md">
+    <div
+      style={{ overflowY: "hidden" }}
+      className="stretched search-overlay has-plugin-bootstrap has-plugin-easing device-md"
+    >
       <div id="wrapper" className="clearfix"></div>
       <header
         id="header"

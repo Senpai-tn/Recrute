@@ -6,8 +6,22 @@ import Sidebar from '../Sidebar/Sidebar'
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 import '../Sidebar/Sidebar.css'
 import axios from 'axios'
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid'
+import { DataGrid } from '@mui/x-data-grid'
 import { withStyles } from '@material-ui/core'
+import Modal from 'react-modal/lib/components/Modal'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  Select,
+} from '@mui/material'
+
 const StyledDataGrid = withStyles({
   root: {
     '& .MuiDataGrid-renderingZone': {
@@ -25,74 +39,73 @@ const StyledDataGrid = withStyles({
 })(DataGrid)
 
 function Dashboard() {
+  const [open, setOpen] = React.useState(false)
+  const [role, setRole] = React.useState('CANDIDATE')
   const [data, setData] = useState([])
-  const [users, setUsers] = useState([])
+  const [selectedUser, setSelectedUser] = useState({})
+  const [showUpdateModal, setShowUpdateModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const location = useLocation()
   const user = useSelector((state) => state.user) || {}
+  const [users, setUsers] = useState([])
+  const [selectedRows, setSelectedRows] = useState([])
   var d = []
-  const columns: GridColDef[] = [
-    { field: 'firstName', headerName: 'First name', width: 130 },
-    { field: 'lastName', headerName: 'Last name', width: 130 },
-    {
-      field: 'age',
-      headerName: 'Age',
-      type: 'number',
-      width: 90,
-    },
+  var tempUsers = []
 
-    {
-      field: 'fullName',
-      headerName: 'Full name',
-      description: 'This column has a value getter and is not sortable.',
-      sortable: true,
-      width: 160,
-      valueGetter: (params: GridValueGetterParams) =>
-        `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-    },
-    {
-      field: 'action',
-      width: 350,
-      renderCell: (params) => {
-        return (
-          <div
-            style={{
-              width: 350,
-              display: 'flex',
-              justifyContent: 'space-evenly',
-            }}
-          >
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                alert('update => ' + params.id)
-              }}
-            >
-              Update
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                alert('Delete => ' + params.id)
-              }}
-            >
-              Delete
-            </button>
-          </div>
-        )
-      },
-    },
-  ]
+  const Delete = () => {
+    var cible
+    if (Object.keys(selectedUser) != 0) {
+      cible = selectedUser
+    } else {
+      cible = selectedRows
+    }
+    axios
+      .delete('http://localhost:5000/admin/delete', {
+        data: {
+          cible: cible,
+        },
+      })
+      .then((res) => {
+        setShowDeleteModal(false)
+        tempUsers = []
 
+        Object.keys(res.data).map((k) => {
+          tempUsers.push({
+            id: res.data[k]._id + '',
+            lastName: res.data[k].lastName,
+            firstName: res.data[k].firstName,
+            age: res.data[k].role,
+            fullName: dateFormat(res.data[k].deletedAt),
+          })
+        })
+        setUsers(tempUsers)
+      })
+  }
+  const dateFormat = (date) => {
+    if (date == null) return
+    return (
+      new Date(date).getFullYear() +
+      '/' +
+      (new Date(date).getMonth() + 1) +
+      '/' +
+      new Date(date).getDate() +
+      '   ' +
+      new Date(date).getHours() +
+      ':' +
+      new Date(date).getMinutes() +
+      ':' +
+      new Date(date).getSeconds()
+    )
+  }
   useEffect(() => {
-    var tempUsers = []
     axios.get('http://localhost:5000/admin').then((res) => {
       Object.keys(res.data.users).map((k) => {
-        console.log(res.data.users[k]._id)
         tempUsers.push({
           id: res.data.users[k]._id + '',
-          lastName: res.data.users[k].nom,
-          firstName: res.data.users[k].prenom,
+          lastName: res.data.users[k].lastName,
+          firstName: res.data.users[k].firstName,
           age: res.data.users[k].role,
+          fullName: dateFormat(res.data.users[k].deletedAt),
         })
       })
       Object.keys(res.data.stat[0].stat).map((k) => {
@@ -105,6 +118,113 @@ function Dashboard() {
     return () => {}
   }, [])
 
+  const columns = [
+    {
+      field: 'firstName',
+      headerName: 'First name',
+      width: 160,
+    },
+    { field: 'lastName', headerName: 'Last name', width: 160 },
+    {
+      field: 'age',
+      headerName: 'Role',
+
+      width: 160,
+    },
+
+    {
+      field: 'fullName',
+      headerName: 'Deleted At',
+      description: 'This column has a value getter and is not sortable.',
+      sortable: true,
+      width: 160,
+
+      // valueGetter: (params: GridValueGetterParams) =>
+      //   `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+    },
+    {
+      field: 'action',
+      width: 350,
+      renderCell: (params) => {
+        return params.row.fullName == null ? (
+          <div
+            style={{
+              width: 350,
+              display: 'flex',
+              justifyContent: 'space-evenly',
+            }}
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                handleClickOpen()
+                setSelectedUser(params.row)
+              }}
+            >
+              Update
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowDeleteModal(true)
+                setSelectedUser(params.row)
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        ) : (
+          <div
+            className="ADMIN"
+            style={{
+              width: 350,
+              display: 'flex',
+              justifyContent: 'space-evenly',
+            }}
+          >
+            Deleted
+          </div>
+        )
+      },
+    },
+  ]
+  const handleChange = (event) => {
+    setRole(event.target.value || '')
+  }
+
+  const handleClickOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = (event, reason) => {
+    if (reason !== 'backdropClick') {
+      setOpen(false)
+      if (['ADMIN', 'HR', 'CANDIDATE'].includes(role)) {
+        axios
+          .put('http://localhost:5000/admin/setrole', {
+            id: selectedUser.id,
+            role: role,
+          })
+          .then((res) => {
+            tempUsers = []
+
+            Object.keys(res.data).map((k) => {
+              tempUsers.push({
+                id: res.data[k]._id + '',
+                lastName: res.data[k].lastName,
+                firstName: res.data[k].firstName,
+                age: res.data[k].role,
+                fullName: dateFormat(res.data[k].deletedAt),
+              })
+            })
+            setUsers(tempUsers)
+          })
+      } else {
+        return
+      }
+    }
+  }
+
   if (location.pathname === '/ADMIN' && user.role !== 'ADMIN')
     return (
       <>
@@ -114,10 +234,145 @@ function Dashboard() {
   return (
     <div>
       <Sidebar />
+      <Modal
+        isOpen={showDeleteModal}
+        className={['Modal', 'Delete'].join(' ')}
+        overlayClassName="Overlay"
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            fontSize: 18,
+            fontWeight: 'bolder',
+            width: 600,
+          }}
+        >
+          Confirm Deleting{' '}
+          {Object.keys(selectedUser) == 0
+            ? 'selected rows ' + selectedRows.length
+            : ' user ' + selectedUser.firstName}
+          ?
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            height: 100,
+          }}
+        >
+          <button
+            style={{
+              background: 'red',
+              color: 'white',
+              border: 0,
+              borderRadius: 5,
+              width: 80,
+            }}
+            onClick={() => {
+              Delete()
+            }}
+          >
+            Confirm
+          </button>
+          <button
+            style={{
+              background: '#0d6efd',
+              color: '#fff',
+              border: 0,
+              borderRadius: 5,
+              width: 80,
+            }}
+            onClick={() => {
+              setShowDeleteModal(false)
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </Modal>
+      <Modal
+        isOpen={showUpdateModal}
+        className={['Modal', 'Delete'].join(' ')}
+        overlayClassName="Overlay"
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            fontSize: 18,
+            fontWeight: 'bolder',
+          }}
+        >
+          Select the new role
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            height: 100,
+          }}
+        >
+          <button
+            style={{
+              background: 'red',
+              color: 'white',
+              border: 0,
+              borderRadius: 5,
+              width: 80,
+            }}
+          >
+            Confirm
+          </button>
+          <button
+            style={{
+              background: '#0d6efd',
+              color: '#fff',
+              border: 0,
+              borderRadius: 5,
+              width: 80,
+            }}
+            onClick={() => {
+              setShowUpdateModal(false)
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </Modal>
+
+      <Dialog disableEscapeKeyDown open={open} onClose={handleClose}>
+        <DialogTitle>Fill the form</DialogTitle>
+        <DialogContent>
+          <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap' }}>
+            <FormControl sx={{ m: 1, minWidth: 120 }}>
+              <InputLabel htmlFor="demo-dialog-native">Age</InputLabel>
+              <Select
+                native
+                value={role}
+                onChange={handleChange}
+                input={<OutlinedInput label="Age" id="demo-dialog-native" />}
+              >
+                <option value={'CANDIDATE'} selected>
+                  Candidate
+                </option>
+                <option value={'HR'}>HR</option>
+                <option value={'ADMIN'}>Admin</option>
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>Ok</Button>
+        </DialogActions>
+      </Dialog>
       <div className="home-section">
         Dashboard
         <LineChart
-          width={window.innerWidth - 78}
+          width={window.innerWidth - 100}
           height={300}
           data={data}
           margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
@@ -128,29 +383,58 @@ function Dashboard() {
           <YAxis />
           <Tooltip />
         </LineChart>
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            height: 375,
-          }}
-        >
-          <StyledDataGrid
-            rowHeight={50}
-            rows={users}
-            columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            checkboxSelection
-            onSelectionModelChange={(itm) => {
-              var selected = []
-              itm.map((i) => {
-                selected.push(users.find((e) => e.id == i))
-              })
+        <div>
+          Users
+          {selectedRows.length != 0 && (
+            <div>
+              <button
+                style={{
+                  background: '#f00',
+                  color: '#fff',
+                  border: 0,
+                  borderRadius: 10,
+                  width: 380,
+                  height: 30,
+                  fontSize: 18,
+                  fontWeight: 'bolder',
+                }}
+                onClick={() => {
+                  setSelectedUser({})
 
-              console.log(selected)
+                  setShowDeleteModal(true)
+                }}
+              >
+                Delete selected rows
+              </button>
+            </div>
+          )}
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              height: users.length * 50 + 120,
+              maxHeight: 375,
             }}
-          />
+          >
+            <StyledDataGrid
+              rowHeight={50}
+              rows={users}
+              columns={columns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              checkboxSelection
+              onSelectionModelChange={(itm) => {
+                var selected = []
+                itm.map((i) => {
+                  var u = users.find((e) => e.id == i)
+                  if (u.fullName == null) {
+                    selected.push(u)
+                  }
+                })
+                setSelectedRows(selected)
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

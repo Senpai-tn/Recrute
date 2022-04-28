@@ -9,7 +9,7 @@ function Home() {
   }, []);
 
   return (
-    <div style={{ flex: 1, minHeight: "100vh" }}>
+    <div style={{ overflowY: "hidden", height: "100%" }}>
       <ListOffers />
     </div>
   );

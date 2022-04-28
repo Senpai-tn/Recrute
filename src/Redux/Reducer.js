@@ -1,6 +1,7 @@
 const initialState = {
   user: JSON.parse(localStorage.getItem("user")),
   isLoading: false,
+  offer: {},
 };
 
 function Reducer(state = initialState, action) {
@@ -15,6 +16,14 @@ function Reducer(state = initialState, action) {
       return { ...state, user: action.user };
     case "loading":
       return { ...state, isLoading: action.isLoading };
+    case "setUser":
+      localStorage.setItem("user", JSON.stringify(action.user));
+      return { ...state, user: action.user };
+    case "addOffer":
+      localStorage.setItem("user", JSON.stringify(action.user));
+      return { ...state, user: action.user };
+    case "OfferToUpdate":
+      return { ...state, offer: action.offer };
     default:
       return state;
   }

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import { faCheck, faEye, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -46,22 +45,20 @@ function SignUp() {
 
   const RegisterAction = () => {
     if (!lower || !upper || !number || !checkLength) {
-      console.log("555555");
       return;
     }
     var user = new User(login, firstName, lastName, password, email, type);
     dispatch({ type: "loading", isLoading: true });
     axios
-      .post("http://localhost:5000/register", { user })
+      .post("http://localhost:5000/register", { user: user })
       .then((res) => {
         dispatch({ type: "loading", isLoading: false });
-        console.log(res);
+
         dispatch({ type: "auth", user: res.data });
         window.location.assign("/");
       })
       .catch((error) => {
         dispatch({ type: "loading", isLoading: false });
-        console.log(error);
       });
   };
 

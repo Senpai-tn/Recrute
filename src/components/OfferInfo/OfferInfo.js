@@ -59,7 +59,6 @@ function OfferInfo() {
       .finally(() => {})
       .catch((error) => {
         dispatch({ type: "loading", isLoading: false });
-        console.log(error);
       });
   };
 
@@ -78,7 +77,7 @@ function OfferInfo() {
       <Modal isOpen={isLoading} className="Modal" overlayClassName="Overlay">
         <img alt="spinner" src={Spinner} />
       </Modal>
-      <h2>OfferInfo {offer.title}</h2>
+      <h2>OfferInfo {offer._id}</h2>
       <img
         src={"../../images/" + offer.type + ".png"}
         alt={"offer " + offer.title}
