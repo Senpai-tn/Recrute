@@ -16,7 +16,7 @@ function ListOffers() {
   const checkOffer = (user, offer) => {
     var result;
     user.likes.map((u) => {
-      if (u._id === offer._id) {
+      if (u === offer._id) {
         result = true;
       }
     });

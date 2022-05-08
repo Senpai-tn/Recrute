@@ -1,12 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
-import Spinner from "../../images/spinner.gif";
+import ResultModal from "./ResultModal";
 Modal.setAppElement("#root");
 function Quiz() {
   var location = useLocation();
+  var navigate = useNavigate();
   var { offer } = location.state || "";
   const [questions, setQuestion] = useState([]);
   const [minutes, setMinutes] = useState(0);
@@ -16,7 +17,7 @@ function Quiz() {
   const [message, setMessage] = useState("");
   const [formData, setFormData] = useState([]);
   const [answers, setAnswers] = useState([]);
-  const [finalResult, setfinalResult] = useState(0);
+  const [finalResult, setfinalResult] = useState(null);
   const [array, setArray] = useState([0]);
   var user = useSelector((state) => state.user);
   var isLoading = useSelector((state) => state.isLoading);
@@ -29,7 +30,6 @@ function Quiz() {
 
   const Validate = () => {
     dispatch({ type: "loading", isLoading: true });
-
     axios
       .post("http://localhost:5000/questions", {
         formData: formData,
@@ -40,8 +40,8 @@ function Quiz() {
       })
       .then((res) => {
         dispatch({ type: "loading", isLoading: false });
-        console.log(res.data);
-        //navigate("/offer", { state: { id: res.data._id } });
+        dispatch({ type: "OfferToUpdate", offer: offer });
+        setfinalResult(res.data.exam.result);
       })
       .catch((error) => {});
   };
@@ -83,10 +83,18 @@ function Quiz() {
     });
     return () => {};
   }, [offer]);
-
+  const handleClose = () => {
+    navigate("/offer", { state: { id: offer._id } });
+    setfinalResult(null);
+  };
   return (
     <div>
       Quiz {offer.type}
+      <ResultModal
+        handleClose={handleClose}
+        isOpen={finalResult != null}
+        finalResult={finalResult}
+      />
       <div>
         <div
           style={{
@@ -100,13 +108,6 @@ function Quiz() {
           {minutes}:{seconds}
         </div>
         <div>
-          <Modal
-            isOpen={isLoading}
-            className="Modal"
-            overlayClassName="Overlay"
-          >
-            <img alt="spinner" src={Spinner} />
-          </Modal>
           <Modal
             isOpen={modalIsOpen || minutes + seconds == 0}
             //isOpen={modalIsOpen}

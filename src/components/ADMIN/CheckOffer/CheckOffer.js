@@ -5,11 +5,9 @@ import { useParams } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useDispatch, useSelector } from "react-redux";
-import Spinner from "../../../images/spinner.gif";
 
 const CheckOffer = () => {
   const params = useParams();
-  var isLoading = useSelector((state) => state.isLoading);
   const [offer, setOffer] = useState({});
   var dispatch = useDispatch();
   const getOffer = (check) => {
@@ -47,10 +45,6 @@ const CheckOffer = () => {
 
   return (
     <div>
-      <Modal isOpen={isLoading} className="Modal" overlayClassName="Overlay">
-        <img alt="spinner" src={Spinner} />
-      </Modal>
-
       <Stack
         sx={{
           width: window.innerWidth * 0.3,

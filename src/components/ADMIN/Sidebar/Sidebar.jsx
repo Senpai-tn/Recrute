@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import './Sidebar.css'
 function Sidebar() {
-  const [toggle, setToggle] = useState(false)
+  const [toggle, setToggle] = useState(true)
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state.user)
   return (
     <>
       <div className={toggle ? 'sidebar open' : 'sidebar'}>
@@ -22,70 +25,97 @@ function Sidebar() {
         </div>
         <ul className="nav-list">
           <li>
-            <a href="/">
+            <a
+              href="/"
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '0 15px ',
+              }}
+            >
               <i className="bx bx-grid-alt"></i>
-              <span className="links_name">Home</span>
+              <span
+                className="links_name"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: 50,
+                }}
+              >
+                Home
+              </span>
             </a>
             <span className="tooltip">Home</span>
           </li>
+
           <li>
-            <a href="/RH">
-              <i className="bx bx-user"></i>
-              <span className="links_name">User</span>
+            <a
+              href="/admin/offers"
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '0 15px ',
+              }}
+            >
+              <i class="bx bx-layer"></i>
+              <span
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: 50,
+                }}
+                className="links_name"
+              >
+                Offers
+              </span>
             </a>
-            <span className="tooltip">User</span>
+            <span className="tooltip">Manage Offers</span>
           </li>
+
           <li>
-            <a href="/">
-              <i className="bx bx-chat"></i>
-              <span className="links_name">Messages</span>
+            <a
+              href="/hr"
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '0 15px ',
+              }}
+            >
+              <i class="bx bx-chart"></i>
+              <span
+                className="links_name"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: 50,
+                }}
+              >
+                HR
+              </span>
             </a>
-            <span className="tooltip">Messages</span>
+            <span className="tooltip">HR</span>
           </li>
-          <li>
-            <a href="/">
-              <i className="bx bx-pie-chart-alt-2"></i>
-              <span className="links_name">Analytics</span>
-            </a>
-            <span className="tooltip">Analytics</span>
-          </li>
-          <li>
-            <a href="/">
-              <i className="bx bx-folder"></i>
-              <span className="links_name">File Manager</span>
-            </a>
-            <span className="tooltip">Files</span>
-          </li>
-          <li>
-            <a href="/">
-              <i className="bx bx-cart-alt"></i>
-              <span className="links_name">Order</span>
-            </a>
-            <span className="tooltip">Order</span>
-          </li>
-          <li>
-            <a href="/">
-              <i className="bx bx-heart"></i>
-              <span className="links_name">Saved</span>
-            </a>
-            <span className="tooltip">Saved</span>
-          </li>
-          <li>
-            <a href="/">
-              <i className="bx bx-cog"></i>
-              <span className="links_name">Setting</span>
-            </a>
-            <span className="tooltip">Setting</span>
-          </li>
+
           <li className="profile">
             <div className="profile-details">
-              <img src="profile.jpg" alt="profileImg" />
               <div className="name_job">
-                <div className="name">Prem Shahi</div>
-                <div className="job">{'Admin'}</div>
+                <div className="name">
+                  {user.lastName + ' ' + user.firstName}
+                </div>
+                <div className="job">{user.role}</div>
               </div>
             </div>
-            <i className="bx bx-log-out" id="log_out"></i>
+            <i
+              className="bx bx-log-out"
+              id="log_out"
+              onClick={() => {
+                dispatch({
+                  type: 'auth',
+                  user: {},
+                })
+                window.location.assign('/')
+              }}
+            ></i>
           </li>
         </ul>
       </div>

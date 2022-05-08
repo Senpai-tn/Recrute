@@ -7,8 +7,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import axios from "axios";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 const style = {
   position: "absolute",
   top: "50%",
@@ -21,9 +22,36 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-const UpdateOffer = ({ isOpen, handleClose }) => {
+const UpdateOffer = ({ isOpen, handleClose, setIsSubmit }) => {
   var offer = useSelector((state) => state.offer);
+  var user = useSelector((state) => state.user);
   const [title, setTitle] = useState(offer.title);
+  const [type, setType] = useState(offer.type);
+  const [isDraft, setIsDraft] = useState(offer.state === "DRAFT");
+  const dispatch = useDispatch();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmit(true);
+    dispatch({ type: "loading", isLoading: true });
+    axios
+      .put("http://localhost:5000/offers", {
+        id: offer._id,
+        state: offer.state === "DRAFT" && isDraft ? "DRAFT" : "SENT",
+        title: title,
+        type: type,
+      })
+      .then((res) => {
+        dispatch({ type: "OfferToUpdate", offer: res.data.offer });
+        dispatch({
+          type: "setUser",
+          user: res.data.rh,
+        });
+
+        handleClose();
+        dispatch({ type: "loading", isLoading: false });
+        setIsSubmit(false);
+      });
+  };
   return (
     <Modal
       open={isOpen}
@@ -32,12 +60,15 @@ const UpdateOffer = ({ isOpen, handleClose }) => {
       aria-describedby="modal-modal-description"
     >
       <Box sx={style}>
-        <form>
+        <form onSubmit={handleSubmit}>
           <TextField
             required
             type={"text"}
-            value={offer.title}
+            value={title}
             placeholder="Title of offer"
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
           />
           <Autocomplete
             disablePortal
@@ -46,14 +77,22 @@ const UpdateOffer = ({ isOpen, handleClose }) => {
             includeInputInList
             options={["C++", "HTML", "JAVA", "JS", "PYTHON", "REACT JS"]}
             sx={{ width: 300 }}
-            value={offer.type}
+            value={type}
+            onChange={(event, newValue) => {
+              setType(newValue);
+            }}
             renderInput={(params) => (
-              <TextField {...params} label="Type of offer" />
+              <TextField required {...params} label="Type of offer" />
             )}
           />
 
           <Checkbox
-            checked={offer.state == "DRAFT"}
+            disabled={offer.state != "DRAFT"}
+            defaultValue={offer.state == "DRAFT"}
+            checked={isDraft}
+            onChange={() => {
+              setIsDraft(!isDraft);
+            }}
             inputProps={{ "aria-label": "controlled" }}
           />
           <input

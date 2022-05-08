@@ -11,7 +11,10 @@ function Header() {
   const dispatch = useDispatch();
   const toggleMenu = () => {};
 
-  if (location.pathname.toUpperCase() === "/ADMIN") {
+  if (
+    location.pathname.toUpperCase().includes("ADMIN") &&
+    user.role.includes("ADMIN")
+  ) {
     return <></>;
   }
   return (
@@ -39,14 +42,6 @@ function Header() {
                 <a href="/" className="retina-logo">
                   {<img src={logo} alt="Canvas Logo" />}
                 </a>
-              </div>
-              <div className="header-misc ms-0 ms-md-2">
-                {/* <div id="top-search" className="header-misc-icon">
-                  <a href="google.com" id="top-search-trigger">
-                    <i className="icon-line-search"></i>
-                    <i className="icon-line-cross"></i>
-                  </a>
-                </div> */}
               </div>
 
               {Object.keys(user).length === 0 || user == undefined ? (
@@ -110,42 +105,19 @@ function Header() {
                       <div>Home</div>
                     </Link>
                   </li>
-                  <li
-                    className={
-                      location.pathname === "/users"
-                        ? "menu-item current"
-                        : "menu-item"
-                    }
-                  >
-                    <a className="menu-link" href="demo-forum-single.html">
-                      <div>Topic Page</div>
-                    </a>
-                  </li>
-                  <li
-                    className={
-                      location.pathname === "/offers"
-                        ? "menu-item current"
-                        : "menu-item"
-                    }
-                  >
-                    <a className="menu-link" href="demo-forum-profile.html">
-                      <div>Profile</div>
-                    </a>
-                  </li>
-                  <li
-                    className={
-                      location.pathname === "/exams"
-                        ? "menu-item current"
-                        : "menu-item"
-                    }
-                  >
-                    <a
-                      className="menu-link"
-                      href="demo-forum-search-result.html"
+                  {Object.keys(user).length !== 0 || user == undefined ? (
+                    <li
+                      className={
+                        location.pathname === "/profile"
+                          ? "menu-item current"
+                          : "menu-item"
+                      }
                     >
-                      <div>Search Page</div>
-                    </a>
-                  </li>
+                      <a className="menu-link" href="/profile">
+                        <div>Profile</div>
+                      </a>
+                    </li>
+                  ) : null}
                 </ul>
               </nav>
               <form

@@ -9,6 +9,7 @@ import axios from 'axios'
 import { DataGrid } from '@mui/x-data-grid'
 import { withStyles } from '@material-ui/core'
 import Modal from 'react-modal/lib/components/Modal'
+import Swal from 'sweetalert2'
 import {
   Box,
   Button,
@@ -40,6 +41,7 @@ const StyledDataGrid = withStyles({
 
 function Dashboard() {
   const [open, setOpen] = React.useState(false)
+  const [error, seterror] = React.useState(false)
   const [role, setRole] = React.useState('CANDIDATE')
   const [data, setData] = useState([])
   const [selectedUser, setSelectedUser] = useState({})
@@ -59,6 +61,7 @@ function Dashboard() {
     } else {
       cible = selectedRows
     }
+
     axios
       .delete('http://localhost:5000/admin/delete', {
         data: {
@@ -128,7 +131,6 @@ function Dashboard() {
     {
       field: 'age',
       headerName: 'Role',
-
       width: 160,
     },
 
@@ -147,32 +149,37 @@ function Dashboard() {
       width: 350,
       renderCell: (params) => {
         return params.row.fullName == null ? (
-          <div
-            style={{
-              width: 350,
-              display: 'flex',
-              justifyContent: 'space-evenly',
-            }}
-          >
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                handleClickOpen()
-                setSelectedUser(params.row)
-              }}
-            >
-              Update
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                setShowDeleteModal(true)
-                setSelectedUser(params.row)
-              }}
-            >
-              Delete
-            </button>
-          </div>
+          user._id != params.row.id ? (
+            user.role != 'SUPER_ADMIN' &&
+            params.row.age == 'SUPER_ADMIN' ? null : (
+              <div
+                style={{
+                  width: 350,
+                  display: 'flex',
+                  justifyContent: 'space-evenly',
+                }}
+              >
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleClickOpen()
+                    setSelectedUser(params.row)
+                  }}
+                >
+                  Update
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowDeleteModal(true)
+                    setSelectedUser(params.row)
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            )
+          ) : null
         ) : (
           <div
             className="ADMIN"
@@ -199,7 +206,7 @@ function Dashboard() {
   const handleClose = (event, reason) => {
     if (reason !== 'backdropClick') {
       setOpen(false)
-      if (['ADMIN', 'HR', 'CANDIDATE'].includes(role)) {
+      if (['ADMIN', 'HR', 'CANDIDATE', 'SUPER_ADMIN'].includes(role)) {
         axios
           .put('http://localhost:5000/admin/setrole', {
             id: selectedUser.id,
@@ -207,7 +214,7 @@ function Dashboard() {
           })
           .then((res) => {
             tempUsers = []
-
+            console.log(res.data)
             Object.keys(res.data).map((k) => {
               tempUsers.push({
                 id: res.data[k]._id + '',
@@ -218,6 +225,9 @@ function Dashboard() {
               })
             })
             setUsers(tempUsers)
+          })
+          .catch((error) => {
+            console.log(error)
           })
       } else {
         return
@@ -348,10 +358,10 @@ function Dashboard() {
         <DialogContent>
           <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap' }}>
             <FormControl sx={{ m: 1, minWidth: 120 }}>
-              <InputLabel htmlFor="demo-dialog-native">Age</InputLabel>
+              <InputLabel htmlFor="demo-dialog-native">Role</InputLabel>
               <Select
                 native
-                value={role}
+                selected={role}
                 onChange={handleChange}
                 input={<OutlinedInput label="Age" id="demo-dialog-native" />}
               >
@@ -360,6 +370,9 @@ function Dashboard() {
                 </option>
                 <option value={'HR'}>HR</option>
                 <option value={'ADMIN'}>Admin</option>
+                {user.role === 'SUPER_ADMIN' && (
+                  <option value={'SUPER_ADMIN'}>Super Admin</option>
+                )}
               </Select>
             </FormControl>
           </Box>
@@ -400,11 +413,19 @@ function Dashboard() {
                 }}
                 onClick={() => {
                   setSelectedUser({})
-
+                  if (error) {
+                    Swal.fire({
+                      title: 'Error!',
+                      text: 'Correct the errors first',
+                      icon: 'error',
+                      confirmButtonText: 'Ok',
+                    })
+                    return false
+                  }
                   setShowDeleteModal(true)
                 }}
               >
-                Delete selected rows
+                Delete "{selectedRows.length}" selected rows
               </button>
             </div>
           )}
@@ -417,6 +438,7 @@ function Dashboard() {
             }}
           >
             <StyledDataGrid
+              hideFooterSelectedRowCount
               rowHeight={50}
               rows={users}
               columns={columns}
@@ -427,9 +449,31 @@ function Dashboard() {
                 var selected = []
                 itm.map((i) => {
                   var u = users.find((e) => e.id == i)
-                  if (u.fullName == null) {
-                    selected.push(u)
+                  if (u.age === 'SUPER_ADMIN' && user.role != 'SUPER_ADMIN') {
+                    Swal.fire({
+                      title: 'Error!',
+                      text: 'You are not allowed to select a super admin',
+                      icon: 'error',
+                      confirmButtonText: 'Ok',
+                    })
+                    seterror(true)
+
+                    return false
                   }
+
+                  if (u.id == user._id) {
+                    Swal.fire({
+                      title: 'Error!',
+                      text: 'You can not select your self',
+                      icon: 'error',
+                      confirmButtonText: 'Ok',
+                    })
+                    seterror(true)
+
+                    return false
+                  }
+                  seterror(false)
+                  selected.push(u)
                 })
                 setSelectedRows(selected)
               }}

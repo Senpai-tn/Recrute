@@ -6,9 +6,7 @@ import axios from "axios";
 import User from "../../models/User";
 import { useDispatch, useSelector } from "react-redux";
 import "./SignUp.css";
-import Spinner from "../../images/spinner.gif";
 import Footer from "../Footer/Footer";
-import Modal from "react-modal/lib/components/Modal";
 function SignUp() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setlastName] = useState("");
@@ -68,9 +66,6 @@ function SignUp() {
   };
   return (
     <section id="content">
-      <Modal isOpen={isLoading} className="Modal" overlayClassName="Overlay">
-        <img alt="spinner" src={Spinner} />
-      </Modal>
       <div className="content-wrap py-0">
         <div className="section m-0">
           <div className="curve-bg"></div>

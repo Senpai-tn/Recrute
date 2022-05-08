@@ -10,8 +10,6 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import Footer from "../Footer/Footer";
-import Spinner from "../../images/spinner.gif";
-import Modal from "react-modal/lib/components/Modal";
 function SignIn() {
   const dispatch = useDispatch();
   const [error, setError] = useState("");
@@ -72,9 +70,6 @@ function SignIn() {
   };
   return (
     <section id="content">
-      <Modal isOpen={isLoading} className="Modal" overlayClassName="Overlay">
-        <img alt="spinner" src={Spinner} />
-      </Modal>
       <div className="content-wrap py-0">
         <div className="section m-0">
           <div className="curve-bg"></div>

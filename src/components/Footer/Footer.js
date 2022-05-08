@@ -13,27 +13,17 @@ function Footer() {
       className="dark"
       style={{
         backgroundColor: "#101010",
+        width: "100px",
         position: "fixed",
-        bottom: 5,
+        bottom: 15,
         right: "10px",
         display: "flex",
-        justifyContent: "space-around",
-        paddingX: "30px",
+        justifyContent: "space-evenly",
+        //paddingX: "20px",
       }}
     >
       <a
-        href="https://www.instagram.com"
-        className="social-icon si-small si-colored si-google"
-      >
-        <i className="icon-instagram">
-          <FontAwesomeIcon icon={faInstagram} />
-        </i>
-        <i className="icon-instagram">
-          <FontAwesomeIcon icon={faInstagram} />
-        </i>
-      </a>
-      <a
-        href="google.com"
+        href="https://www.facebook.com"
         className="social-icon si-small si-light si-facebook"
       >
         <i className="icon-facebook">

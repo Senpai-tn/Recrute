@@ -13,7 +13,7 @@ function NotFound() {
                 <div class="four_zero_four_bg">
                   <h1 class="text-center">404</h1>
                 </div>
-                <div class="contant_box_404">
+                <div class="contant_box_404" style={{ width: "100%" }}>
                   <h3 class="h2">Look like you're lost</h3>
 
                   <p>the page you are looking for not avaible!</p>

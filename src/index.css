@@ -19046,7 +19046,7 @@ address {
 
 ol,
 ul {
-  padding-left: 2rem
+  padding-left: 0
 }
 
 ol,
@@ -34258,9 +34258,11 @@ border-left-color: #F9BE79;
 
 .four_zero_four_bg{
  
- background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
-    height: 400px;
-    background-position: center;
+  width: 100vw;
+  background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
+  height: 520px;
+  background-repeat: no-repeat;
+  background-position: 300px;
  }
  
  

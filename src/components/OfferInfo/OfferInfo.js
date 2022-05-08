@@ -5,8 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import Footer from "../Footer/Footer";
-import Spinner from "../../images/spinner.gif";
-import Modal from "react-modal/lib/components/Modal";
+
 function OfferInfo() {
   const [offer, setOffer] = useState({});
   const [test, setTest] = useState(false);
@@ -19,7 +18,7 @@ function OfferInfo() {
   const checkOffer = (user, offer) => {
     var result;
     user.likes.map((u) => {
-      if (u._id == offer._id) {
+      if (u == offer._id) {
         result = true;
       }
     });
@@ -29,14 +28,26 @@ function OfferInfo() {
   const like = () => {
     if (checkOffer(user, offer)) {
       var filtered = user.likes.filter((value, index, arr) => {
-        return value._id != offer._id;
+        return value != offer._id;
       });
       user.likes = filtered;
     } else {
-      user.likes = [...user.likes, offer];
+      user.likes = [...user.likes, offer._id];
     }
-    dispatch({ type: "like", user: user });
-    window.location.reload();
+    //dispatch({ type: "loading", isLoading: true });
+    axios
+      .post("http://localhost:5000/users/like", {
+        user: user,
+        idOffer: offer._id,
+      })
+      .then((res) => {
+        dispatch({ type: "like", user: res.data.user });
+        dispatch({ type: "OfferToUpdate", offer: res.data.offer });
+        dispatch({ type: "loading", isLoading: false });
+        setOffer(res.data.offer);
+
+        //window.location.reload();
+      });
   };
 
   const check = (offer) => {
@@ -64,7 +75,6 @@ function OfferInfo() {
 
   useEffect(() => {
     getOffer(check);
-
     return () => {};
   }, []);
 
@@ -74,10 +84,7 @@ function OfferInfo() {
 
   return (
     <div>
-      <Modal isOpen={isLoading} className="Modal" overlayClassName="Overlay">
-        <img alt="spinner" src={Spinner} />
-      </Modal>
-      <h2>OfferInfo {offer._id}</h2>
+      <h2>OfferInfo {offer.title}</h2>
       <img
         src={"../../images/" + offer.type + ".png"}
         alt={"offer " + offer.title}
@@ -97,12 +104,26 @@ function OfferInfo() {
           </>
         ) : null}
       </p>
-      <p>
+      <p
+        style={{
+          width: "100%",
+          justifyContent: "center",
+          display: "flex",
+        }}
+      >
         <button
+          style={{
+            width: "75px",
+            justifyContent: "space-evenly",
+            height: "50px",
+            alignItems: "center",
+            display: "flex",
+          }}
           onClick={() => {
             like();
           }}
         >
+          {offer.liked && offer.liked.length}
           <FontAwesomeIcon
             icon={faHeart}
             style={{ color: checkOffer(user, offer) ? "red" : "yellow" }}
@@ -114,7 +135,11 @@ function OfferInfo() {
           <Link to={"/quiz"} state={{ offer: offer }}>
             Apply
           </Link>
-        ) : null}
+        ) : (
+          <span style={{ color: "red", fontSize: "20", fontWeight: "bold" }}>
+            already applied
+          </span>
+        )}
       </p>
       <Footer />
     </div>
